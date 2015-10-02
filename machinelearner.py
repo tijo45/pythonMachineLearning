@@ -329,62 +329,62 @@ def patternRecognition():
 
                                                                                                                                 plotPatAr.append(eachPattern)
 
-        patloopEndTime = time.time()
-        print 'Pattern loop took:', patloopEndTime - patRecStartTime
+    patloopEndTime = time.time()
+    print 'Pattern loop took:', patloopEndTime - patRecStartTime
 
-        predArray = []
-        if patFound == 1:
-            #fig = plt.figure(figsize=(10,6))
+    predArray = []
+    if patFound == 1:
+        #fig = plt.figure(figsize=(10,6))
 
-            for eachPatt in plotPatAr:
-                futurePoints = patternAr.index(eachPatt)
+        for eachPatt in plotPatAr:
+            futurePoints = patternAr.index(eachPatt)
 
-                if performanceAr[futurePoints] > patForRec[29]:
-                    pcolor = '#24bc00'
-                    #####
-                    predArray.append(1.000)
-                else:
-                    pcolor = '#d40000'
-                    #######
-                    predArray.append(-1.000)
-
-                #plt.plot(xp, eachPatt)
-                predictedOutcomesAr.append(performanceAr[futurePoints])
-                #plt.scatter(35, performanceAr[futurePoints],c=pcolor,alpha=.4)
-
-            patfutureEndTime = time.time()
-            print 'Pattern future loop took:', patfutureEndTime - patloopEndTime
-
-            realOutcomeRange = allData[toWhat+20:toWhat+30]
-
-            if(len(realOutcomeRange) > 0):
-
-
-                realAvgOutcome = reduce(lambda x, y: x + y, realOutcomeRange) / len(realOutcomeRange)
-                predictedAvgOutcome = reduce(lambda x, y: x + y, predictedOutcomesAr) / len(predictedOutcomesAr)
-
-                realMovement = percentChange(allData[toWhat],realAvgOutcome)
+            if performanceAr[futurePoints] > patForRec[29]:
+                pcolor = '#24bc00'
+                #####
+                predArray.append(1.000)
+            else:
+                pcolor = '#d40000'
                 #######
-                # print predArray
-                predictionAverage = reduce(lambda x, y: x + y, predArray) / len(predArray)
-                # print predictionAverage
-                if predictionAverage < 0:
-                    # print 'drop predicted'
-                    # print patForRec[29]
-                    # print realMovement
-                    if realMovement < patForRec[29]:
-                        accuracyArray.append(100)
-                    else:
-                        accuracyArray.append(0)
+                predArray.append(-1.000)
 
-                if predictionAverage > 0:
-                    # print 'rise predicted'
-                    # print patForRec[29]
-                    # print realMovement
-                    if realMovement > patForRec[29]:
-                        accuracyArray.append(100)
-                    else:
-                        accuracyArray.append(0)
+            #plt.plot(xp, eachPatt)
+            predictedOutcomesAr.append(performanceAr[futurePoints])
+            #plt.scatter(35, performanceAr[futurePoints],c=pcolor,alpha=.4)
+
+        patfutureEndTime = time.time()
+        print 'Pattern future loop took:', patfutureEndTime - patloopEndTime
+
+        realOutcomeRange = allData[toWhat+20:toWhat+30]
+
+        if(len(realOutcomeRange) > 0):
+
+
+            realAvgOutcome = reduce(lambda x, y: x + y, realOutcomeRange) / len(realOutcomeRange)
+            predictedAvgOutcome = reduce(lambda x, y: x + y, predictedOutcomesAr) / len(predictedOutcomesAr)
+
+            realMovement = percentChange(allData[toWhat],realAvgOutcome)
+            #######
+            # print predArray
+            predictionAverage = reduce(lambda x, y: x + y, predArray) / len(predArray)
+            # print predictionAverage
+            if predictionAverage < 0:
+                # print 'drop predicted'
+                # print patForRec[29]
+                # print realMovement
+                if realMovement < patForRec[29]:
+                    accuracyArray.append(100)
+                else:
+                    accuracyArray.append(0)
+
+            if predictionAverage > 0:
+                # print 'rise predicted'
+                # print patForRec[29]
+                # print realMovement
+                if realMovement > patForRec[29]:
+                    accuracyArray.append(100)
+                else:
+                    accuracyArray.append(0)
 
     patRecEndTime = time.time()
 
@@ -409,7 +409,7 @@ toWhat = 55000
 avgLine = ((bid+ask)/2)
 patternAr = []
 performanceAr = []
-patternStorage()
+
 
 ######
 accuracyArray = []
@@ -421,17 +421,21 @@ while toWhat < dataLength:
     
     
 
-    avgLine = avgLine[:toWhat]
+    avgLine = allData[:toWhat]
     patForRec = []
+    patternStorage()
     currentPattern()
+
     patternRecognition()
 
     # print accuracyArray
-    accuracyAverage = reduce(lambda x, y: x + y, accuracyArray) / len(accuracyArray)
+    accuracyAverage = 0
+    if(len(accuracyArray) > 0) : accuracyAverage = reduce(lambda x, y: x + y, accuracyArray) / len(accuracyArray)
     
     toWhat += 1
     samps +=1
-    print 'Backtested Accuracy is',str(accuracyAverage)+'% after',samps,'actionable trades'
+    print 'Array Length', len(avgLine), len(patternAr), len(performanceAr)
+    print 'Backtested Accuracy is',str(accuracyAverage)+'% after',len(accuracyArray),'actionable trades'
 
 totalEnd = time.time()-totalStart
 
